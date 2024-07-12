@@ -9,7 +9,7 @@ import { theme } from "../theme/theme";
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
-<ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </Provider>
   );
 };

@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Grid, Typography } from '@mui/material';
 import BInput from '@/Form/BInput/BInput';
 import { z } from 'zod';
+import { useAddExperienceMutation } from '@/redux/api/experienceApi';
 
 type Anchor = 'bottom';
 
@@ -21,6 +22,7 @@ const validationSchema = z.object({
     startDate: z.string().nonempty("Start date is required"),
     endDate: z.string().nonempty("End date is required"),
     description: z.string().nonempty("Description is required"),
+    imageLink: z.string().nonempty("Image Link is required"),
 });
 
 const AddExperience = () => {
@@ -28,9 +30,16 @@ const AddExperience = () => {
         bottom: false,
     });
 
-    const isLoading = false;
+    const [addExperience, { isLoading }] = useAddExperienceMutation()
     const handleAddExperience = async (values: FieldValues) => {
-        console.log(values)
+        
+       const res= await addExperience(values).unwrap()
+       if(res?.success){
+        alert("Experience added successfully")
+       }else{
+        alert("Experience not created")
+       }
+        console.log(res)
         // todo: handle add experience
     };
 
@@ -51,7 +60,7 @@ const AddExperience = () => {
     const form = (anchor: Anchor) => (
         <Box
             component="div"
-            sx={{ height: '70vh', padding: 15  }}
+            sx={{ height: '90vh', padding: 15 }}
             role="presentation"
         >
             <h2 className='text-center font-bold  pb-5 text-4xl'>Add Experience</h2>
@@ -66,6 +75,7 @@ const AddExperience = () => {
                     startDate: "",
                     endDate: "",
                     description: "",
+                    image: ""
                 }}
             >
                 <Grid container spacing={4} my={1}>
@@ -73,6 +83,13 @@ const AddExperience = () => {
                         <BInput
                             name="title"
                             label="Title"
+                            fullWidth={true}
+                        />
+                    </Grid>
+                    <Grid item md={6}>
+                        <BInput
+                            name="imageLink"
+                            label="Image link"
                             fullWidth={true}
                         />
                     </Grid>
@@ -110,21 +127,21 @@ const AddExperience = () => {
                         <BInput
                             name="description"
                             label="Description"
-                            
-                           fullWidth={true}
+
+                            fullWidth={true}
                             type="text"
                         />
                     </Grid>
                 </Grid>
 
                 <Button
-                className='bg-orange-600 hover:bg-orange-500'
+                    className='bg-orange-600 hover:bg-orange-500'
                     variant="contained"
                     size='medium'
                     sx={{
                         margin: "10px 0px",
                         padding: "15px",
-                    
+
                     }}
                     fullWidth={true}
                     type="submit"

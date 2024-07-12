@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -10,28 +10,38 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Grid } from '@mui/material';
 import BInput from '@/Form/BInput/BInput';
 import { z } from 'zod';
-import TextField from '@mui/material/TextField';
+import { useAddProjectMutation } from '@/redux/api/projectApi';
 
 type Anchor = 'bottom';
 
-// zod validation schema
+// zod validation schema based on projectSchema
 const validationSchema = z.object({
   projectName: z.string().nonempty("Project Name is required"),
+  usedTechnologies: z.string().nonempty("Technologies used are required"),
+  liveLink: z.string().url("Please enter a valid URL").nonempty("Live Link is required"),
+  imageLink: z.string().url("Please enter a valid URL").nonempty("Live Link is required"),
+  githubCodeLink: z.string().url("Please enter a valid URL").nonempty("GitHub Link is required"),
   description: z.string().nonempty("Description is required"),
-  startDate: z.string().nonempty("Start date is required"),
-  endDate: z.string().nonempty("End date is required"),
-  technologies: z.string().nonempty("Technologies used are required"),
-  link: z.string().url("Please enter a valid URL").nonempty("Link is required"),
 });
 
 const AddProject = () => {
+
+  const [addProject,{isLoading}]=useAddProjectMutation()
+
   const [state, setState] = React.useState({
     bottom: false,
   });
 
-  const isLoading = false;
+
 
   const handleAddProject = async (values: FieldValues) => {
+    const res = await addProject(values).unwrap()
+    if(res.success){
+      alert('project added successfully')
+    }else{
+      alert("project not added")
+    }
+
     console.log(values);
     // todo: handle add project
   };
@@ -63,11 +73,11 @@ const AddProject = () => {
         resolver={zodResolver(validationSchema)}
         defaultValues={{
           projectName: "",
+          usedTechnologies: "",
+          liveLink: "",
+          githubCodeLink: "",
           description: "",
-          startDate: "",
-          endDate: "",
-          technologies: "",
-          link: "",
+          imageLink: "",
         }}
       >
         <Grid container spacing={2} my={1}>
@@ -78,38 +88,34 @@ const AddProject = () => {
               fullWidth={true}
             />
           </Grid>
-        
           <Grid item md={6}>
             <BInput
-              name="startDate"
-              label="Start Date"
-              fullWidth={true}
-              type="date"
-            />
-          </Grid>
-          <Grid item md={6}>
-            <BInput
-              name="endDate"
-              label="End Date"
-              fullWidth={true}
-              type="date"
-            />
-          </Grid>
-          <Grid item md={6}>
-            <BInput
-              name="technologies"
+              name="usedTechnologies"
               label="Technologies Used"
               fullWidth={true}
             />
           </Grid>
           <Grid item md={12}>
             <BInput
-              name="link"
-              label="Project Link"
+              name="imageLink"
+              label="Image Link"
               fullWidth={true}
             />
           </Grid>
-
+          <Grid item md={12}>
+            <BInput
+              name="liveLink"
+              label="Live Link"
+              fullWidth={true}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <BInput
+              name="githubCodeLink"
+              label="GitHub Link"
+              fullWidth={true}
+            />
+          </Grid>
           <Grid item md={12}>
             <BInput
               name="description"
@@ -123,10 +129,9 @@ const AddProject = () => {
 
         <Button
           variant="contained"
-
           sx={{
             margin: "10px 0px",
-            padding: "1px"
+            padding: "15px",
           }}
           fullWidth={true}
           type="submit"
