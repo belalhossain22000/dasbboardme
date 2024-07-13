@@ -4,33 +4,55 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import { FieldValues } from 'react-hook-form';
-import BForm from '@/Form/BForm/BForm';
+import { useForm, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Grid, TextField } from '@mui/material';
-import BInput from '@/Form/BInput/BInput';
 import { z } from 'zod';
+import { useAddBlogMutation } from '@/redux/api/blogApi';
 
 type Anchor = 'bottom';
 
 // zod validation schema
 const validationSchema = z.object({
   title: z.string().nonempty("Title is required"),
-  author: z.string().nonempty("Author name is required"),
-  date: z.string().nonempty("Date is required"),
+  description: z.string().nonempty("Description is required"),
   content: z.string().nonempty("Content is required"),
+  date: z.string().nonempty("Date is required"),
+  imageLink: z.string().nonempty("Image Link is required"),
+  category: z.string().nonempty("Category is required"),
+  readingTime: z.string().nonempty("Reading Time is required"),
 });
 
 const AddBlog = () => {
+
+  const [addBlog, { isLoading }] = useAddBlogMutation()
   const [state, setState] = React.useState({
     bottom: false,
   });
 
-  const isLoading = false;
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(validationSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      content: "",
+      date: "",
+      imageLink: "",
+      category: "",
+      readingTime: "",
+    }
+  });
+
+
 
   const handleAddBlog = async (values: FieldValues) => {
     console.log(values);
-    // todo: handle add blog
+    const res = await addBlog(values).unwrap();
+    if (res?.success) {
+      alert("Blog added successfully")
+    } else {
+      alert("Blog not created")
+    }
   };
 
   const toggleDrawer =
@@ -55,34 +77,31 @@ const AddBlog = () => {
     >
       <h2>Add Blog</h2>
       <Divider />
-      <BForm
-        onSubmit={handleAddBlog}
-        resolver={zodResolver(validationSchema)}
-        defaultValues={{
-          title: "",
-          author: "",
-          date: "",
-          content: "",
-        }}
-      >
+      <form onSubmit={handleSubmit(handleAddBlog)}>
         <Grid container spacing={2} my={1}>
           <Grid item md={12}>
-            <BInput
-              name="title"
+            <TextField
+              {...register("title")}
               label="Title"
-              fullWidth={true}
-            />
-          </Grid>
-          <Grid item md={12}>
-            <BInput
-              name="author"
-              label="Author"
-              fullWidth={true}
+              fullWidth
+              error={!!errors.title}
+              helperText={errors.title ? errors.title.message : ""}
             />
           </Grid>
           <Grid item md={12}>
             <TextField
-              name="date"
+              {...register("description")}
+              label="Description"
+              fullWidth
+              multiline
+              rows={2}
+              error={!!errors.description}
+              helperText={errors.description ? errors.description.message : ""}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              {...register("date")}
               label="Date"
               type="date"
               fullWidth
@@ -90,15 +109,46 @@ const AddBlog = () => {
               InputLabelProps={{
                 shrink: true,
               }}
+              error={!!errors.date}
+              helperText={errors.date ? errors.date.message : ""}
             />
           </Grid>
           <Grid item md={12}>
-            <BInput
-              name="content"
+            <TextField
+              {...register("content")}
               label="Content"
-              fullWidth={true}
+              fullWidth
               multiline
               rows={4}
+              error={!!errors.content}
+              helperText={errors.content ? errors.content.message : ""}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              {...register("imageLink")}
+              label="Image Link"
+              fullWidth
+              error={!!errors.imageLink}
+              helperText={errors.imageLink ? errors.imageLink.message : ""}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              {...register("category")}
+              label="Category"
+              fullWidth
+              error={!!errors.category}
+              helperText={errors.category ? errors.category.message : ""}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              {...register("readingTime")}
+              label="Reading Time"
+              fullWidth
+              error={!!errors.readingTime}
+              helperText={errors.readingTime ? errors.readingTime.message : ""}
             />
           </Grid>
         </Grid>
@@ -108,12 +158,12 @@ const AddBlog = () => {
           sx={{
             margin: "10px 0px",
           }}
-          fullWidth={true}
+          fullWidth
           type="submit"
         >
           {isLoading ? "Loading..." : "Add Blog"}
         </Button>
-      </BForm>
+      </form>
     </Box>
   );
 

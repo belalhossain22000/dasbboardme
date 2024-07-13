@@ -10,25 +10,35 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Grid } from '@mui/material';
 import BInput from '@/Form/BInput/BInput';
 import { z } from 'zod';
+import { useAddSkillMutation } from '@/redux/api/skillsApi';
 
 type Anchor = 'bottom';
 
 // zod validation schema
 const validationSchema = z.object({
-  skillName: z.string().nonempty("Skill Name is required"),
-  proficiency: z.string().nonempty("Proficiency level is required"),
+  name: z.string().nonempty("Skill Name is required"),
+  proficiency: z.enum(['Beginner', 'Intermediate', 'Advanced', 'Expert'], {
+    required_error: "Proficiency level is required"
+  }),
+  category: z.string().nonempty("Category is required"),
+  experienceYears: z.string().min(0, "Experience years must be at least 0")
 });
 
 const AddSkill = () => {
+
+  const [addSkill,{isLoading}]=useAddSkillMutation()
   const [state, setState] = React.useState({
     bottom: false,
   });
 
-  const isLoading = false;
+ 
 
   const handleAddSkill = async (values: FieldValues) => {
     console.log(values);
-    // todo: handle add skill
+   const res= await addSkill(values).unwrap()
+   if(res.success){
+    alert('skill added successfully')
+   }
   };
 
   const toggleDrawer =
@@ -59,12 +69,14 @@ const AddSkill = () => {
         defaultValues={{
           skillName: "",
           proficiency: "",
+          category: "",
+          experienceYears: 0,
         }}
       >
         <Grid container spacing={2} my={1}>
           <Grid item md={12}>
             <BInput
-              name="skillName"
+              name="name"
               label="Skill Name"
               fullWidth={true}
             />
@@ -73,6 +85,21 @@ const AddSkill = () => {
             <BInput
               name="proficiency"
               label="Proficiency Level"
+              fullWidth={true}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <BInput
+              name="category"
+              label="Category"
+              fullWidth={true}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <BInput
+              name="experienceYears"
+              label="Experience Years"
+              type="number"
               fullWidth={true}
             />
           </Grid>

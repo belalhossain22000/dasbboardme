@@ -5,10 +5,11 @@ const blogApi = baseApi.injectEndpoints({
 
    
     // get all blog
-    getAllBlog: build.query({
-      query: () =>({
-        url: `/blog/all-blogs`,
-        method: 'GET',
+    addBlog: build.mutation({
+      query: (data) =>({
+        url: `/blog/add-blog`,
+        method: 'POST',
+        body:data
       }),
      
     }),
@@ -17,4 +18,4 @@ const blogApi = baseApi.injectEndpoints({
   }),
 })
 
-export const { useGetAllBlogQuery} = blogApi
+export const { useAddBlogMutation} = blogApi
