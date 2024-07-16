@@ -10,26 +10,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import BForm from "@/Form/BForm/BForm";
 import BInput from "@/Form/BInput/BInput";
+import { useRegisterMutation } from "@/redux/api/authApi";
 
- const validationSchema = z.object({
-  name: z.string().min(1, "Please enter your name!"),
+const validationSchema = z.object({
+  username: z.string().min(1, "Please enter your name!"),
   email: z.string().email("Please enter a valid email address!"),
   password: z.string().min(6, "Must be at least 6 characters"),
 });
 
- const defaultValues = {
-  name: "",
+const defaultValues = {
+  username: "",
   email: "",
   password: "",
 };
 
 const RegisterPage = () => {
   const router = useRouter();
+  const [register, { isLoading }] = useRegisterMutation()
 
-  const isLoading= true;
   // handle register
   const handleRegister = async (values: FieldValues) => {
-    console.log(values);
+    const res=await register(values).unwrap();
+    if(res.success) {
+      alert("Registered successfully")
+    }
+    console.log(res);
     // todo register
     // call the server to register the user
     // then navigate to the dashboard page
@@ -80,7 +85,7 @@ const RegisterPage = () => {
             >
               <Grid container spacing={2} my={1}>
                 <Grid item md={12}>
-                  <BInput label="Name" fullWidth={true} name="name" />
+                  <BInput label="Name" fullWidth={true} name="username" />
                 </Grid>
                 <Grid item md={6}>
                   <BInput
@@ -100,7 +105,7 @@ const RegisterPage = () => {
                 </Grid>
               </Grid>
               <Button
-              variant="contained"
+                variant="contained"
                 sx={{
                   margin: "10px 0px",
                 }}

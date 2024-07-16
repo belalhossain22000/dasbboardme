@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const baseApi = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://portfolio-backend-mauve-six.vercel.app/api',
+        baseUrl: 'https://portfolio-backedn.vercel.app/api',
         prepareHeaders: (headers) => {
             const token = localStorage.getItem('accessToken');
             if (token) {
