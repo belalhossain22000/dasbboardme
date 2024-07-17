@@ -33,6 +33,7 @@ const RegisterPage = () => {
     const res=await register(values).unwrap();
     if(res.success) {
       alert("Registered successfully")
+      router.push("/login")
     }
     console.log(res);
     // todo register

@@ -17,6 +17,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
+import { logoutUser } from "@/service/actions/logoutUser";
+import { useRouter } from "next/navigation";
+import { deleteCookies } from "@/service/actions/deleteCookies";
 
 const drawerWidth = 240;
 
@@ -29,7 +32,7 @@ const Sidebar = (props: Props) => {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
-
+  const router = useRouter()
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -43,6 +46,12 @@ const Sidebar = (props: Props) => {
     if (!isClosing) {
       setMobileOpen(!mobileOpen);
     }
+  };
+
+  const logoutUsers = () => {
+    localStorage.removeItem('accessToken');
+    deleteCookies('accessToken')
+    router.push("/")
   };
 
   const drawer = (
@@ -59,7 +68,7 @@ const Sidebar = (props: Props) => {
           { text: "Projects", href: "/dashboard/projects" },
           { text: "Skills", href: "/dashboard/skills" },
           { text: "Blog", href: "/dashboard/blog" },
-          { text: "LogOut", href: "/login" },
+
         ].map((item) => (
           <Link href={item.href} key={item.text}>
             <ListItem disablePadding>
@@ -74,6 +83,14 @@ const Sidebar = (props: Props) => {
             </ListItem>
           </Link>
         ))}
+        <ListItem disablePadding>
+          <ListItemButton onClick={logoutUsers}>
+            <ListItemIcon>
+              <MailIcon />
+            </ListItemIcon>
+            <ListItemText primary="LogOut" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </div>
   );

@@ -30,14 +30,14 @@ const LoginPage = () => {
     const router = useRouter();
 
     const handleLogin = async (values: FieldValues) => {
-        console.log(values)
         setLoading(true)
         try {
           const res = await usersLogin(values);
-          if (res.data.id) {
+          if (res.success) {
             alert("login success");
             setUserIntoLocalStorage(res?.data?.token);
-            router.push("/");
+            router.push("/dashboard");
+            setLoading(false)
           }
         } catch (err: any) {
           console.error(err.message);
